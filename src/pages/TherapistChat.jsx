@@ -2,11 +2,10 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../services/api";
 import ChatBox from "../components/ChatBox";
-import { Send, Stethoscope, MessageCircle, AlertTriangle, Shield } from "lucide-react";
+import { Send, Stethoscope, AlertTriangle, Shield } from "lucide-react";
 
 function TherapistChat() {
   const { therapistEmail } = useParams();
-  const navigate = useNavigate();
 
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState([]);

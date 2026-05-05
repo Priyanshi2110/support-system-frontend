@@ -75,7 +75,7 @@ function TherapistDashboard() {
 
   useEffect(() => {
     loadDashboard(true);
-  }, []);
+  }, [loadDashboard]);
 
   // Add polling for dashboard updates
   useEffect(() => {
@@ -87,10 +87,10 @@ function TherapistDashboard() {
   }, [loadDashboard]);
 
   useEffect(() => {
-    if (selectedAnonymousId) {
-      loadConversation(selectedAnonymousId);
-    }
-  }, [selectedAnonymousId]);
+  if (selectedAnonymousId) {
+    loadConversation(selectedAnonymousId);
+  }
+}, [selectedAnonymousId, loadConversation]);
 
   // Add polling for real-time conversation updates
   useEffect(() => {
