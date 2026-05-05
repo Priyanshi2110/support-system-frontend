@@ -2,7 +2,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
 export const connectSocket = (email, onMessageReceived) => {
-  const socket = new SockJS("http://localhost:8080/ws");
+  const socket = new SockJS("https://support-system-backend-1.onrender.com/ws");
 
   const client = new Client({
     webSocketFactory: () => socket,
