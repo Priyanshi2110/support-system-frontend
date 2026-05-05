@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 import ChatBox from "../components/ChatBox";
 import {
