@@ -80,7 +80,9 @@ const sendMessage = async (e) => {
     assignedTherapistEmail: null,
   };
 
+  // show instantly
   setChat((prev) => [...prev, userMessage]);
+
   setMessage("");
   setIsLoading(true);
   setIsTyping(true);
@@ -88,12 +90,15 @@ const sendMessage = async (e) => {
   try {
     const email = getUserEmail();
 
-    await API.post("/chat/send", {
+    const res = await API.post("/chat/send", {
       senderEmail: email,
       message: userMessage.message,
     });
 
-    // ❌ DO NOT ADD AI MESSAGE HERE
+    console.log("API RESPONSE:", res.data);
+
+    // ❗ DO NOT ADD AI MESSAGE HERE
+    // socket will handle it
 
   } catch (error) {
     console.error("Error sending message:", error);
