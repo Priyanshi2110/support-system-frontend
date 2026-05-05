@@ -46,73 +46,64 @@ function Chat() {
 
   // 🔥 REAL-TIME SOCKET
   useEffect(() => {
-  const email = getUserEmail();
+    const email = getUserEmail();
 
-  const disconnect = connectSocket(email, (newMessage) => {
-    console.log("🔥 New message:", newMessage);
+    const disconnect = connectSocket(email, (newMessage) => {
+      console.log("🔥 New message:", newMessage);
 
-    setChat((prev) => {
-      const exists = prev.some((m) => m.id === newMessage.id);
-      if (exists) return prev; // 🚫 prevent duplicate
-      return [...prev, newMessage];
+      setChat((prev) => [...prev, newMessage]);
+
+      // ✅ Modern notification (NO alert)
+      toast.success(`New message from ${newMessage.senderEmail}`);
     });
 
-    // ✅ stop loader when AI response arrives
-    if (newMessage.role === "AI") {
-      setIsTyping(false);
-      setIsLoading(false);
-    }
-  });
-
-  return () => {
-    if (disconnect) disconnect();
-  };
-}, []);
+    // ✅ cleanup (important)
+    return () => {
+      if (disconnect) disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
   }, [chat]);
 
   // 📤 Send message
-const sendMessage = async (e) => {
-  e.preventDefault();
-  if (!message.trim() || isLoading) return;
+  const sendMessage = async (e) => {
+    e.preventDefault();
+    if (!message.trim() || isLoading) return;
 
-  const userMessage = {
-    id: Date.now(),
-    message: message.trim(),
-    role: "USER",
-    timestamp: new Date().toISOString(),
-    assignedTherapistEmail: null,
+    const userMessage = {
+      id: Date.now(),
+      message: message.trim(),
+      role: "USER",
+      timestamp: new Date().toISOString(),
+    };
+
+    setChat((prev) => [...prev, userMessage]);
+    setMessage("");
+    setIsLoading(true);
+    setIsTyping(true);
+
+    try {
+      const email = getUserEmail();
+
+      await API.post("/chat/send", {
+        senderEmail: email,
+        message: userMessage.message,
+      });
+
+      setTimeout(() => {
+        setIsTyping(false);
+      }, 800);
+
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setIsTyping(false);
+      toast.error("Failed to send message");
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  // ✅ Show user instantly
-  setChat((prev) => [...prev, userMessage]);
-
-  setMessage("");
-  setIsLoading(true);
-  setIsTyping(true);
-
-  try {
-    const email = getUserEmail();
-
-    await API.post("/chat/send", {
-      senderEmail: email,
-      message: userMessage.message,
-    });
-
-    // ❌ DO NOTHING HERE
-    // socket will handle AI
-
-  } catch (error) {
-    console.error("Error sending message:", error);
-    toast.error("Failed to send message");
-
-    // ❗ Only stop on error
-    setIsTyping(false);
-    setIsLoading(false);
-  }
-};
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
