@@ -68,7 +68,7 @@ function Chat() {
   }, [chat]);
 
   // 📤 Send message
-  const sendMessage = async (e) => {
+const sendMessage = async (e) => {
   e.preventDefault();
   if (!message.trim() || isLoading) return;
 
@@ -88,30 +88,12 @@ function Chat() {
   try {
     const email = getUserEmail();
 
-    // ✅ GET RESPONSE
-    const res = await API.post("/chat/send", {
+    await API.post("/chat/send", {
       senderEmail: email,
       message: userMessage.message,
     });
 
-    // ✅ ADD AI MESSAGE (THIS WAS MISSING)
-    if (res?.data) {
-      setChat((prev) => [
-        ...prev,
-        {
-          id: Date.now() + 1,
-          message:
-            typeof res.data === "string"
-              ? res.data
-              : res.data.message,
-          role: "AI",
-          timestamp: new Date().toISOString(),
-          assignedTherapistEmail: null,
-        },
-      ]);
-    }
-
-    console.log("API RESPONSE:", res.data);
+    // ❌ DO NOT ADD AI MESSAGE HERE
 
   } catch (error) {
     console.error("Error sending message:", error);
