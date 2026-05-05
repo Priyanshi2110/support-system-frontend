@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast"; // ✅ ADD THIS
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -36,6 +37,7 @@ function App() {
 
     window.addEventListener("storage", syncAuth);
     window.addEventListener("authChange", syncAuth);
+
     return () => {
       window.removeEventListener("storage", syncAuth);
       window.removeEventListener("authChange", syncAuth);
@@ -63,11 +65,17 @@ function App() {
       return children;
     }
 
-    return auth.role === "THERAPIST" ? <Navigate to="/therapist" replace /> : <Navigate to="/home" replace />;
+    return auth.role === "THERAPIST"
+      ? <Navigate to="/therapist" replace />
+      : <Navigate to="/home" replace />;
   };
 
   return (
     <BrowserRouter>
+
+      {/* ✅ GLOBAL NOTIFICATION SYSTEM */}
+      <Toaster position="top-right" reverseOrder={false} />
+
       {auth.isAuth && <Navbar />}
 
       <Routes>
@@ -76,9 +84,12 @@ function App() {
 
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+
+        {/* Therapist Chat */}
         <Route path="/therapist-chat" element={<ProtectedRoute><TherapistChat /></ProtectedRoute>} />
         <Route path="/therapist-chat/:therapistEmail" element={<ProtectedRoute><TherapistChat /></ProtectedRoute>} />
 
+        {/* Therapist Dashboard */}
         <Route
           path="/therapist"
           element={

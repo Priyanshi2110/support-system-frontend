@@ -138,27 +138,41 @@ function TherapistDashboard() {
   ];
 
   const handleReply = async (e) => {
-    e.preventDefault();
-    if (!replyMessage.trim() || !selectedAnonymousId) return;
+  e.preventDefault();
+  if (!replyMessage.trim() || !selectedAnonymousId) return;
 
-    try {
-      const token = localStorage.getItem("token");
-      await API.post(
-        "/therapist/reply",
-        {
-          anonymousId: selectedAnonymousId,
-          message: replyMessage.trim(),
-          role: "THERAPIST"
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+  try {
+    const token = localStorage.getItem("token");
+    const therapistEmail = localStorage.getItem("email"); // therapist
 
-      setReplyMessage("");
-      loadConversation(selectedAnonymousId);
-    } catch (error) {
-      console.error("Error sending reply:", error);
+    // 🔥 get student email from current conversation
+    const studentMsg = conversation.find((m) => m.role === "USER");
+    const studentEmail = studentMsg?.senderEmail;
+
+    if (!studentEmail) {
+      console.error("Student email not found in conversation");
+      return;
     }
-  };
+
+    await API.post(
+      "/therapist/reply",
+      {
+        senderEmail: studentEmail,                 // ✅ student
+        assignedTherapistEmail: therapistEmail,    // ✅ therapist
+        anonymousId: selectedAnonymousId,
+        message: replyMessage.trim(),
+        role: "THERAPIST"
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    setReplyMessage("");
+    loadConversation(selectedAnonymousId);
+
+  } catch (error) {
+    console.error("Error sending reply:", error);
+  }
+};
 
   if (loading) {
     return (
