@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import API from "../services/api";
 import ChatBox from "../components/ChatBox";
 import { Send, Stethoscope, AlertTriangle, Shield } from "lucide-react";

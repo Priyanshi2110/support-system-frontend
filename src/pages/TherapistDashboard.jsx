@@ -6,7 +6,6 @@ import {
   AlertTriangle,
   MessageSquare,
   UserCheck,
-  AlertCircle,
   Activity,
   BarChart3,
   Send
@@ -26,15 +25,12 @@ function TherapistDashboard() {
   const [selectedAlias, setSelectedAlias] = useState("");
   const [replyMessage, setReplyMessage] = useState("");
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
   const loadDashboard = useCallback(async (showLoading = false) => {
     try {
       if (showLoading) {
         setLoading(true);
-      } else {
-        setRefreshing(true);
-      }
+      } 
       const token = localStorage.getItem("token");
 
       const [statsRes, casesRes] = await Promise.all([
@@ -54,9 +50,7 @@ function TherapistDashboard() {
     } finally {
       if (showLoading) {
         setLoading(false);
-      } else {
-        setRefreshing(false);
-      }
+      } 
     }
   }, [selectedAnonymousId]);
 
