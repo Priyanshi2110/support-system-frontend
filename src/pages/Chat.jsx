@@ -69,41 +69,58 @@ function Chat() {
 
   // 📤 Send message
   const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!message.trim() || isLoading) return;
+  e.preventDefault();
+  if (!message.trim() || isLoading) return;
 
-    const userMessage = {
-      id: Date.now(),
-      message: message.trim(),
-      role: "USER",
-      timestamp: new Date().toISOString(),
-    };
-
-    setChat((prev) => [...prev, userMessage]);
-    setMessage("");
-    setIsLoading(true);
-    setIsTyping(true);
-
-    try {
-      const email = getUserEmail();
-
-      await API.post("/chat/send", {
-        senderEmail: email,
-        message: userMessage.message,
-      });
-
-      setTimeout(() => {
-        setIsTyping(false);
-      }, 800);
-
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setIsTyping(false);
-      toast.error("Failed to send message");
-    } finally {
-      setIsLoading(false);
-    }
+  const userMessage = {
+    id: Date.now(),
+    message: message.trim(),
+    role: "USER",
+    timestamp: new Date().toISOString(),
+    assignedTherapistEmail: null,
   };
+
+  setChat((prev) => [...prev, userMessage]);
+  setMessage("");
+  setIsLoading(true);
+  setIsTyping(true);
+
+  try {
+    const email = getUserEmail();
+
+    // ✅ GET RESPONSE
+    const res = await API.post("/chat/send", {
+      senderEmail: email,
+      message: userMessage.message,
+    });
+
+    // ✅ ADD AI MESSAGE (THIS WAS MISSING)
+    if (res?.data) {
+      setChat((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          message:
+            typeof res.data === "string"
+              ? res.data
+              : res.data.message,
+          role: "AI",
+          timestamp: new Date().toISOString(),
+          assignedTherapistEmail: null,
+        },
+      ]);
+    }
+
+    console.log("API RESPONSE:", res.data);
+
+  } catch (error) {
+    console.error("Error sending message:", error);
+    toast.error("Failed to send message");
+  } finally {
+    setIsTyping(false);
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
